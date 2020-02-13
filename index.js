@@ -1,5 +1,6 @@
 const { Engine, Render, Runner, World, Bodies } = Matter;
 
+const cells = 3;
 const width = 600;
 const height = 600;
 
@@ -35,3 +36,49 @@ const walls = [
 ];
 World.add(world, walls);
 
+// ===============
+// Maze Generation
+// ===============
+
+// grid will track which units we have already traversed
+const grid = Array(cells)
+                .fill(null)
+                .map(el => Array(cells).fill(false));
+
+// Verticals will track all vertical walls
+// --------------------------------------------
+// |            |               |             |
+// |            *               *             |
+// |            |               |             |
+// |-------------------------------------------
+// |            |               |             |
+// |            *               *             |
+// |            |               |             |
+// |------------------------------------------|
+// |            |               |             |
+// |            *               *             |
+// |            |               |             |
+// --------------------------------------------
+
+const verticals = Array(cells)
+                    .fill(null)
+                    .map(el => Array(cells-1).fill(false));
+
+// Horizontals will track all horizontal walls
+// --------------------------------------------
+// |            |               |             |
+// |            |               |             |
+// |            |               |             |
+// |-----*--------------*--------------*-------
+// |            |               |             |
+// |            |               |             |
+// |            |               |             |
+// |-----*--------------*--------------*------|
+// |            |               |             |
+// |            |               |             |
+// |            |               |             |
+// --------------------------------------------
+            
+const horizontals = Array(cells-1)
+                        .fill(null)
+                        .map(el => Array(cells).fill(false));
