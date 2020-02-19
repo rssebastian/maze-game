@@ -1,8 +1,11 @@
 const { Engine, Render, Runner, World, Bodies } = Matter;
 
+// Config
 const cells = 3;
 const width = 600;
 const height = 600;
+
+const unitLength = width / cells;
 
 // Creates new engine
 const engine = Engine.create();
@@ -111,25 +114,51 @@ const stepThroughCell = (row, column) => {
     // Assemble randomly-ordered list of neighbros
     const neighbors = shuffle([
         // Top
-        [row - 1, column],
+        [row - 1, column, 'up'],
         // Right
-        [row, column + 1],
+        [row, column + 1, 'right'],
         // Bottom
-        [row + 1, column],
+        [row + 1, column, 'down'],
         //Left
-        [row, column - 1]
+        [row, column - 1, 'left']
     ]);
-    console.log(neighbors);
 
     // For each neighbor...
+    for (let neighbor of neighbors) {
+        const [nextRow, nextColumn, direction] = neighbor;
     
     // See if that neighbor is out of bounds
+        if (nextRow < 0 || nextRow >= cells || 
+            nextColumn < 0 || nextColumn >= cells) continue;
     
     // If we have visited that neighbor, continue to next neighbor
-    
+        if (grid[nextRow][nextColumn]) continue;
     // Remove a wall from either horizontals or verticals
+        if (direction === 'left') verticals[row][column - 1] = true
+        else if (direction === 'right') verticals[row][column] = true;
+        else if (direction === 'up') horizontals[row-1][column] = true;
+        else if (direction === 'down') horizontals[row][column] = true;
+    
+        stepThroughCell(nextRow, nextColumn);
+    };
     
     // Visit that next cell
 };
 
-stepThroughCell(1, 1);
+stepThroughCell(startRow, startColumn);
+
+horizontals.forEach((row, rowIndex) => {
+    row.forEach((open, columnIndex) => {
+        if (open) return;
+        
+        const wall = Bodies.rectangle(
+            columnIndex * unitLength + unitLength/2,
+            rowIndex * unitLength + unitLength/2,
+            unitLength,
+            10,
+            { isStatic: true }
+        );
+        
+        World.add(world, wall);
+    });
+});
