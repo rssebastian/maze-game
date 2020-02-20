@@ -1,4 +1,4 @@
-const { Engine, Render, Runner, World, Bodies } = Matter;
+const { Engine, Render, Runner, World, Bodies, Body } = Matter;
 
 // Config
 const cells = 3;
@@ -9,6 +9,7 @@ const unitLength = width / cells;
 
 // Creates new engine
 const engine = Engine.create();
+engine.world.gravity.y = 0;
 
 // New World is Created with engine
 const { world } = engine;
@@ -139,10 +140,11 @@ const stepThroughCell = (row, column) => {
         else if (direction === 'up') horizontals[row-1][column] = true;
         else if (direction === 'down') horizontals[row][column] = true;
     
+    // Visit that next cell
         stepThroughCell(nextRow, nextColumn);
     };
     
-    // Visit that next cell
+    
 };
 
 stepThroughCell(startRow, startColumn);
@@ -197,3 +199,12 @@ const ball = Bodies.circle(
     unitLength * 0.25
 );
 World.add(world, ball);
+
+document.addEventListener('keydown', event => {
+   const { x, y } = ball.velocity;
+
+   if (event.keyCode === 87) Body.setVelocity(ball, { x, y: y - 5});
+   if (event.keyCode === 68) Body.setVelocity(ball, { x: x + 5, y});
+   if (event.keyCode === 83) Body.setVelocity(ball, { x, y: y + 5});
+   if (event.keyCode === 65) Body.setVelocity(ball, { x: x - 5, y});
+});
